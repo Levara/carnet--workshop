@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM Evaluation Results - {{MODEL_NAME}}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+        }
+
+        header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        header .meta {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            background: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .summary-card h3 {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .summary-card .value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #1f2937;
+        }
+
+        .summary-card .subvalue {
+            font-size: 14px;
+            color: #9ca3af;
+            margin-top: 4px;
+        }
+
+        .verdicts {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .verdict-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .verdict-correct {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .verdict-partial {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .verdict-incorrect {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .results {
+            padding: 30px;
+        }
+
+        .results h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #1f2937;
+        }
+
+        .question-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .question-header {
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .question-header:hover {
+            background: #f9fafb;
+        }
+
+        .question-header.correct {
+            border-left: 4px solid #10b981;
+        }
+
+        .question-header.partial {
+            border-left: 4px solid #f59e0b;
+        }
+
+        .question-header.incorrect {
+            border-left: 4px solid #ef4444;
+        }
+
+        .question-title {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .question-number {
+            font-size: 12px;
+            color: #6b7280;
+            margin-right: 10px;
+        }
+
+        .question-score {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .score-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .score-circle.correct {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .score-circle.partial {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .score-circle.incorrect {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .expand-icon {
+            font-size: 20px;
+            color: #9ca3af;
+            transition: transform 0.3s;
+        }
+
+        .question-header.expanded .expand-icon {
+            transform: rotate(180deg);
+        }
+
+        .question-details {
+            display: none;
+            padding: 0 20px 20px 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .question-details.expanded {
+            display: block;
+        }
+
+        .detail-section {
+            margin-top: 20px;
+        }
+
+        .detail-section h4 {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-section .content {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 6px;
+            font-size: 14px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+
+        .scores-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .score-item {
+            background: #f9fafb;
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .score-item .label {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+
+        .score-item .score {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1f2937;
+        }
+
+        .list-items {
+            list-style: none;
+            margin-top: 10px;
+        }
+
+        .list-items li {
+            background: #f9fafb;
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .list-items.strengths li {
+            border-left: 3px solid #10b981;
+        }
+
+        .list-items.weaknesses li {
+            border-left: 3px solid #ef4444;
+        }
+
+        .list-items.missing li {
+            border-left: 3px solid #f59e0b;
+        }
+
+        .list-items.hallucinations li {
+            border-left: 3px solid #ef4444;
+            background: #fee2e2;
+        }
+
+        .reasoning {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            border-radius: 6px;
+            font-style: italic;
+            margin-top: 15px;
+        }
+
+        footer {
+            padding: 20px 30px;
+            background: #f9fafb;
+            border-top: 1px solid #e5e7eb;
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>LLM Evaluation Results</h1>
+            <div class="meta">
+                <div><strong>Model:</strong> {{MODEL_NAME}}</div>
+                <div><strong>Judge:</strong> {{JUDGE_MODEL}}</div>
+                <div><strong>Evaluated:</strong> {{EVALUATION_DATE}}</div>
+                <div><strong>Original Results:</strong> {{EVALUATED_FILE}}</div>
+            </div>
+        </header>
+
+        <div class="summary">
+            <div class="summary-card">
+                <h3>Overall Score</h3>
+                <div class="value">{{AVG_SCORE}}</div>
+                <div class="subvalue">Range: {{MIN_SCORE}} - {{MAX_SCORE}}</div>
+            </div>
+
+            <div class="summary-card">
+                <h3>Questions</h3>
+                <div class="value">{{TOTAL_QUESTIONS}}</div>
+                <div class="subvalue">{{SUCCESSFUL_JUDGMENTS}} judged successfully</div>
+            </div>
+
+            <div class="summary-card">
+                <h3>Success Rate</h3>
+                <div class="value">{{SUCCESS_RATE}}%</div>
+                <div class="verdicts">
+                    <span class="verdict-badge verdict-correct">{{CORRECT_COUNT}} Correct</span>
+                    <span class="verdict-badge verdict-partial">{{PARTIAL_COUNT}} Partial</span>
+                    <span class="verdict-badge verdict-incorrect">{{INCORRECT_COUNT}} Incorrect</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="results">
+            <h2>Detailed Results</h2>
+            {{QUESTIONS_HTML}}
+        </div>
+
+        <footer>
+            Generated on {{GENERATION_DATE}} | LLM-as-a-Judge Evaluation System
+        </footer>
+    </div>
+
+    <script>
+        // Toggle question details
+        document.querySelectorAll('.question-header').forEach(header => {
+            header.addEventListener('click', () => {
+                header.classList.toggle('expanded');
+                const details = header.nextElementSibling;
+                details.classList.toggle('expanded');
+            });
+        });
+    </script>
+</body>
+</html>

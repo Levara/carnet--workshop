@@ -1,0 +1,253 @@
+# Task: Generate 10 Hard Questions for RAG Model Evaluation
+
+You are given a source document (FAQ, documentation, or knowledge base). Your task is to create 10 challenging questions designed to evaluate smaller LLM models in a RAG (Retrieval-Augmented Generation) system.
+
+## What Makes a Question "Hard"?
+
+Hard questions should test one or more of these aspects:
+
+### 1. Multi-hop Retrieval
+- Answer requires synthesizing information from 2-3 different sections of the document
+- Information is scattered across multiple Q&A pairs or paragraphs
+- Requires connecting related concepts from different parts of the document
+
+### 2. Conditional/Branching Logic
+- Answer has IF-THEN-ELSE structure
+- Multiple solution paths depending on conditions
+- "If X then do Y, otherwise do Z" patterns
+
+### 3. Comparison and Contrast
+- Requires understanding differences between similar concepts
+- Comparing trade-offs between multiple approaches
+- Subtle distinctions in behavior or features
+
+### 4. Embedded or Scattered Information
+- Answer to question X is hidden within the answer to question Y
+- Same information mentioned in 2-3 different places with slightly different context
+- Requires aggregating partial information from multiple locations
+
+### 5. Permission Boundaries and Limitations
+- Understanding what users CAN'T do (negative information)
+- Role-based permissions (who can do what)
+- Technical limitations and constraints
+
+### 6. Procedural Complexity
+- Multi-step workflows (5+ steps)
+- Procedures with critical warnings (data loss, security implications)
+- Multiple alternative methods to achieve the same goal
+
+### 7. Reasoning About "Why"
+- Not just "what" or "how" but "why"
+- Understanding underlying reasons or policies
+- Security, performance, or design rationale
+
+### 8. Technical Nuance
+- Subtle technical distinctions
+- Understanding system behavior at a deeper level
+- Workarounds that have their own limitations
+
+## Output Format
+
+For each of the 10 questions, provide:
+
+---
+
+## Question N: [Short Descriptive Title] ([Difficulty Type])
+
+**Question:**
+[The actual question text in the source document's language]
+
+**Segments needed:**
+
+### Segment 1 ([Brief description])
+**Location in document:** "[Title or heading of the section where this segment appears]"
+
+**Text:**
+```
+[Exact text from the source document]
+```
+
+### Segment 2 (if needed)
+**Location in document:** "[Title or heading]"
+
+**Text:**
+```
+[Exact text from the source document]
+```
+
+[... additional segments as needed ...]
+
+**Proposed Answer:**
+[A reference answer synthesizing the information from all segments - should be comprehensive but concise, 2-4 sentences typically]
+
+**Why this is hard:**
+- [Bullet point 1: specific challenge this question poses]
+- [Bullet point 2: retrieval difficulty]
+- [Bullet point 3: reasoning complexity]
+- [Bullet point 4: what makes it challenging for smaller models]
+
+---
+
+## Guidelines for Question Selection
+
+### DO Select Questions That:
+1. ✅ Require 2-3 document segments to answer completely
+2. ✅ Have long, multi-paragraph answers (3+ paragraphs)
+3. ✅ Include multiple solution paths or alternative approaches
+4. ✅ Involve conditional logic (if this, then that)
+5. ✅ Ask about differences between similar concepts or methods
+6. ✅ Require understanding permissions or limitations
+7. ✅ Have answers scattered across different sections
+8. ✅ Include critical warnings about data loss, security, etc.
+9. ✅ Ask "why" questions requiring reasoning beyond facts
+10. ✅ Involve technical nuances that are easy to misunderstand
+
+### DON'T Select Questions That:
+1. ❌ Have simple, one-sentence answers
+2. ❌ Are answered in a single, short paragraph
+3. ❌ Ask for basic definitions or simple facts
+4. ❌ Can be answered with yes/no without explanation
+5. ❌ Have answers that are obvious from a single sentence
+6. ❌ Are purely informational without complexity
+
+## Distribution of Difficulty Types
+
+Try to include at least one question from each category:
+- 2-3 questions: Multi-hop retrieval (2-3 segments)
+- 2-3 questions: Conditional/branching logic
+- 1-2 questions: Comparison and contrast
+- 1-2 questions: Permission boundaries/limitations
+- 1-2 questions: Procedural complexity (multi-step)
+- 1 question: Technical nuance or "why" reasoning
+
+## Example of a Good Hard Question
+
+**Question:**
+"What should I check if users see a message that they don't have access to the forum because the 'reply' option is not visible?"
+
+**Why this is a good hard question:**
+- Multi-paragraph answer with 3+ paragraphs of explanation
+- Conditional logic: If forced group mode is enabled, then do X, otherwise do Y
+- Multiple solution paths: 3 different approaches to solve the problem
+- Nested settings: Requires understanding interaction between course-level and activity-level settings
+- Procedural complexity: Involves navigating through Settings > Edit Settings > specific options
+- Technical understanding: Need to understand group visibility modes and their implications
+
+## Step-by-Step Process
+
+1. **Read the entire source document** to understand its structure and content
+
+2. **Identify complex topics** that span multiple sections or have detailed explanations
+
+3. **Look for answers with**:
+   - Multiple paragraphs
+   - Step-by-step procedures
+   - Conditional statements (if/then)
+   - Comparisons between options
+   - References to other parts of the document
+
+4. **For each potential question**:
+   - Verify it requires 2-3 segments to answer fully
+   - Check that the answer has meaningful complexity
+   - Ensure it tests reasoning, not just recall
+
+5. **Extract segments carefully**:
+   - Copy exact text from the document
+   - Note the section/heading where it appears
+   - Include enough context for the segment to make sense
+
+6. **Write a reference answer** that:
+   - Synthesizes information from all segments
+   - Is comprehensive but concise
+   - Could serve as a gold standard for evaluation
+
+7. **Explain why it's hard** with specific details about:
+   - Retrieval challenges (how many segments, where located)
+   - Reasoning required (conditional logic, comparison, etc.)
+   - What makes it challenging for smaller models
+
+## Quality Checklist
+
+Before finalizing your 10 questions, verify:
+
+- ✅ Each question requires at least 2 segments (at least 5 out of 10 questions)
+- ✅ At least 3 questions involve conditional or branching logic
+- ✅ At least 2 questions require comparing/contrasting different approaches
+- ✅ At least 1 question asks about permissions or limitations
+- ✅ All proposed answers are 2+ sentences and comprehensive
+- ✅ All "Why this is hard" sections have 3-4 specific bullet points
+- ✅ Questions cover different topics (not all about the same feature)
+- ✅ Segments are exactly quoted from the source (no paraphrasing)
+- ✅ Location references are accurate and specific
+
+## Examples of Difficulty Type Labels
+
+Use these labels in your question titles:
+- `(Multi-hop, Multiple Workflows)`
+- `(Scattered Info, Security Reasoning)`
+- `(Subtle Behavioral Differences)`
+- `(Multiple Procedures)`
+- `(Permission Boundaries)`
+- `(Conditional Workflow)`
+- `(Trade-offs Between Approaches)`
+- `(Technical Limitations)`
+- `(Multi-step, Conditional Logic)`
+
+## Important Reminders
+
+1. **Preserve original language**: If the source document is in Croatian, German, French, etc., keep questions and segments in that language
+2. **Exact quotations**: Copy segment text exactly, don't paraphrase
+3. **Accurate locations**: Note the specific section/heading/question title where each segment appears
+4. **Comprehensive answers**: Reference answers should synthesize all segments, not just repeat one
+5. **Specific difficulty explanations**: In "Why this is hard", be specific about what makes it challenging (don't just say "it's complex")
+
+## Final Output Structure
+
+Your output should be structured as:
+
+```markdown
+# [Document Name] - 10 Hard Questions for Model Evaluation
+
+This file contains 10 challenging questions designed to test smaller LLM models in a RAG context. Each question requires complex reasoning, multi-hop retrieval, or synthesis from multiple document segments.
+
+---
+
+## Question 1: [Title] ([Difficulty Type])
+[Full question structure as specified above]
+
+---
+
+## Question 2: [Title] ([Difficulty Type])
+[Full question structure as specified above]
+
+---
+
+[... continue for all 10 questions ...]
+
+---
+
+## Evaluation Criteria for These Questions
+
+These 10 questions are designed to test:
+
+1. **Multi-hop retrieval**: Questions requiring information from 2-3 different document sections
+2. **Conditional reasoning**: If X then Y, else Z patterns
+3. **Comparison/contrast**: Understanding differences between similar concepts
+4. **Permission/limitation understanding**: What can vs cannot be done
+5. **Procedural complexity**: Multi-step workflows with important warnings
+6. **Synthesis**: Combining scattered information into coherent answer
+7. **Technical reasoning**: Understanding WHY not just WHAT
+8. **Negative information**: Understanding what's not possible/not allowed
+
+## Difficulty Factors
+
+- **Retrieval difficulty**: 1-3 segments needed, sometimes from different Q&A pairs
+- **Answer embedded**: Some answers hidden within different questions
+- **Length**: Answers range from 2 sentences to multiple paragraphs
+- **Conditional logic**: Many answers have IF/ELSE branches
+- **Trade-offs**: Several questions require understanding pros/cons of different approaches
+```
+
+---
+
+Now, please read the provided source document and create 10 hard questions following this template and all guidelines above.
